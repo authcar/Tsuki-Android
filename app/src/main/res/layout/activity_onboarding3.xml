@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="#FFE2ED"
+    android:layout_height="match_parent"
+    tools:context=".Onboarding3Activity">
+
+  <ImageView
+      android:id="@+id/imageView2"
+      android:layout_width="270dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.496"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.247"
+      app:srcCompat="@drawable/cup" />
+
+  <ImageView
+      android:id="@+id/imageView5"
+      android:layout_width="36dp"
+      android:layout_height="10dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.501"
+      app:layout_constraintStart_toStartOf="parent"
+      app:srcCompat="@drawable/dot3"
+      tools:layout_editor_absoluteY="484dp" />
+
+  <TextView
+      android:id="@+id/textView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="@font/lato_bold"
+      android:text="Stay prepared\n&amp; confident"
+      android:textAlignment="center"
+      android:textAllCaps="false"
+      android:textColor="#1C4E88"
+      android:textSize="27sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.504"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:layout_editor_absoluteY="502dp" />
+
+  <TextView
+      android:id="@+id/textView3"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="@font/lato"
+      android:text="get reminders and helpful tips so you're always ready"
+      android:textColor="#808080"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:layout_editor_absoluteY="578dp" />
+
+  <Button
+      android:id="@+id/btnNext2"
+      android:layout_width="63dp"
+      android:layout_height="44dp"
+      android:backgroundTint="#F0558B"
+      android:text=">"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.497"
+      app:layout_constraintStart_toStartOf="parent"
+      app:rippleColor="#D97AAF"
+      tools:layout_editor_absoluteY="620dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
