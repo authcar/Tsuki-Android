@@ -19,7 +19,7 @@ public class Onboarding3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_onboarding1);
+        setContentView(R.layout.activity_onboarding3);
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 findViewById(R.id.main),
@@ -37,13 +37,12 @@ public class Onboarding3Activity extends AppCompatActivity {
                 }
         );
 
-        // INI DITAMBAH DI SINI
-        next = findViewById(R.id.btnNext);
+        next = findViewById(R.id.btnNext2);
 
         next.setOnClickListener(v -> {
             Intent i = new Intent(
                     Onboarding3Activity.this,
-                    SignUpChoiceActivity.class
+                    ChoiceActivity.class
             );
             startActivity(i);
         });

@@ -19,7 +19,7 @@ public class Onboarding2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_onboarding1);
+        setContentView(R.layout.activity_onboarding2);
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 findViewById(R.id.main),
@@ -37,8 +37,7 @@ public class Onboarding2Activity extends AppCompatActivity {
                 }
         );
 
-        // INI DITAMBAH DI SINI
-        next = findViewById(R.id.btnNext);
+        next = findViewById(R.id.btnNext2);
 
         next.setOnClickListener(v -> {
             Intent i = new Intent(

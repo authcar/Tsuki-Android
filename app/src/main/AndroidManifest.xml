@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tsuki">
         <activity
+            android:name=".ChoiceActivity"
+            android:exported="false" />
+        <activity
             android:name=".SignUpChoiceActivity"
             android:exported="false" />
         <activity

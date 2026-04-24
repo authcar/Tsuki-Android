@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Card -->
+    <dimen name="card_margin_horizontal">20dp</dimen>
+    <dimen name="card_margin_vertical">90dp</dimen>
+    <dimen name="card_padding">20dp</dimen>
+    <dimen name="card_corner_radius">32dp</dimen>
+
+    <!-- Typography -->
+    <dimen name="text_title">24sp</dimen>
+    <dimen name="text_subtitle">13sp</dimen>
+    <dimen name="text_label">14sp</dimen>
+    <dimen name="text_body">13sp</dimen>
+    <dimen name="text_button">15sp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_xs">2dp</dimen>
+    <dimen name="spacing_sm">6dp</dimen>
+    <dimen name="spacing_md">10dp</dimen>
+    <dimen name="spacing_lg">14dp</dimen>
+    <dimen name="spacing_xl">16dp</dimen>
+
+    <!-- Input field -->
+    <dimen name="input_corner_radius">14dp</dimen>
+
+    <!-- Button -->
+    <dimen name="button_height">50dp</dimen>
+    <dimen name="social_button_size">48dp</dimen>
+</resources>

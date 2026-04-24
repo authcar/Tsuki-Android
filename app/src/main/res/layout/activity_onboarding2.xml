@@ -25,47 +25,49 @@
             android:layout_width="36dp"
             android:layout_height="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/dot2"
-            tools:layout_editor_absoluteY="484dp" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            android:layout_marginTop="24dp"
+            app:srcCompat="@drawable/dot2" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/lato_bold"
             android:text="Understand your cycle"
             android:textAllCaps="false"
             android:textColor="#1C4E88"
             android:textSize="27sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="502dp" />
-
-        <Button
-            android:id="@+id/btnNext2"
-            android:layout_width="63dp"
-            android:layout_height="44dp"
-            android:backgroundTint="#F0558B"
-            android:text=">"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:rippleColor="#D97AAF"
-            tools:layout_editor_absoluteY="595dp" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/lato"
-            android:text="learn your body phases
-and predict your fertile window"
+            android:gravity="center"
+            android:text="learn your body phases\nand predict your fertile window"
             android:textColor="#808080"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="553dp" />
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <Button
+            android:id="@+id/btnNext2"
+            android:layout_width="63dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#F0558B"
+            android:text=">"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4"
+            app:rippleColor="#D97AAF" />
 
 
 
