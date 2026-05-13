@@ -1,5 +1,6 @@
 package com.example.tsuki;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -66,6 +67,11 @@ public class SignUpChoiceActivity extends AppCompatActivity {
         etName.addTextChangedListener(watcher);
         etEmail.addTextChangedListener(watcher);
         etPassword.addTextChangedListener(watcher);
+
+        // Navigate to ProfileSetupActivity on sign up
+        btnSignUp.setOnClickListener(v -> {
+            startActivity(new Intent(this, ProfileSetupActivity.class));
+        });
 
         // "Already have an account? Sign in"
         TextView tvSignIn = findViewById(R.id.tvSignIn);

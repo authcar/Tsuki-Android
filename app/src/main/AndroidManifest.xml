@@ -12,6 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tsuki">
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_home"
+            android:theme="@style/Theme.Tsuki" />
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileSetupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChoiceActivity"
             android:exported="false" />
         <activity

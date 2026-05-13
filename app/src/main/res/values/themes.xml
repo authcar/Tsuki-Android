@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.Tsuki" parent="Base.Theme.Tsuki" />
+
+    <!-- Bottom Navigation label font -->
+    <style name="BottomNavTextAppearance" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textSize">11sp</item>
+    </style>
 </resources>
