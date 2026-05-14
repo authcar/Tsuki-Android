@@ -49,7 +49,26 @@ public class PeriodCalendarFragment extends Fragment {
         });
 
         btnContinue.setOnClickListener(v -> {
-            // TODO: simpan selectedDateMillis, navigate ke fragment berikutnya
+            // Simpan tanggal period ke SharedPreferences
+            java.util.Calendar selected = java.util.Calendar.getInstance();
+            selected.setTimeInMillis(selectedDateMillis);
+
+            android.content.SharedPreferences prefs = requireContext()
+                    .getSharedPreferences("cycle_data", android.content.Context.MODE_PRIVATE);
+            prefs.edit()
+                    .putInt("period_start_day",   selected.get(java.util.Calendar.DAY_OF_MONTH))
+                    .putInt("period_start_month", selected.get(java.util.Calendar.MONTH))
+                    .putInt("period_start_year",  selected.get(java.util.Calendar.YEAR))
+                    .apply();
+
+            // Navigate ke LoadingFragment — tanpa addToBackStack agar tidak bisa back ke sini
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_left)
+                    .replace(R.id.fragmentContainer, new LoadingFragment())
+                    .commit();
         });
     }
 }

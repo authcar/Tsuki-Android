@@ -35,10 +35,16 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                // TODO: tampilkan HomeFragment
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFragmentContainer, new HomeFragment())
+                        .commit();
                 return true;
             } else if (id == R.id.nav_calendar) {
-                // TODO: tampilkan CalendarFragment
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFragmentContainer, new CalendarFragment())
+                        .commit();
                 return true;
             } else if (id == R.id.nav_learn) {
                 // TODO: tampilkan LearnFragment
@@ -57,5 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Set tab awal
         bottomNav.setSelectedItemId(R.id.nav_home);
+
+        // Load HomeFragment sebagai konten awal
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.mainFragmentContainer, new HomeFragment())
+                    .commit();
+        }
     }
 }

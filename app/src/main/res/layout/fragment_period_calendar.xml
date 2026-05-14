@@ -41,6 +41,7 @@
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/NumberPickerStyle"
             android:dateTextAppearance="@android:style/TextAppearance.Small"
             android:firstDayOfWeek="1" />
 

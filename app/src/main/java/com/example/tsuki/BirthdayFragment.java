@@ -57,9 +57,18 @@ public class BirthdayFragment extends Fragment {
             ).show();
         });
 
-        // TODO: navigate to next profile setup step
+        // Navigate to PeriodFragment
         btnContinue.setOnClickListener(v -> {
-            // placeholder for next step navigation
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_left,
+                            R.anim.slide_in_left,
+                            R.anim.slide_out_right)
+                    .replace(R.id.fragmentContainer, new PeriodFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 }

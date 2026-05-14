@@ -38,11 +38,25 @@ public class PeriodFragment extends Fragment {
         numberPicker.setMaxValue(10);
         numberPicker.setValue(3);
 
-        // Tombol Continue langsung aktif karena selalu ada nilai terpilih
+        // Navigate ke PeriodCalendarFragment
         btnContinue.setOnClickListener(v -> {
             int selectedDays = numberPicker.getValue();
 
-            // TODO: simpan selectedDays, lalu navigate ke fragment berikutnya
+            PeriodCalendarFragment nextFragment = new PeriodCalendarFragment();
+            Bundle args = new Bundle();
+            args.putInt("period_length", selectedDays);
+            nextFragment.setArguments(args);
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_left,
+                            R.anim.slide_in_left,
+                            R.anim.slide_out_right)
+                    .replace(R.id.fragmentContainer, nextFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 }

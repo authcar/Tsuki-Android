@@ -53,7 +53,17 @@ public class LoadingFragment extends Fragment {
                 if (currentProgress >= 100f) {
                     currentProgress = 100f;
                     circularProgress.setProgress(currentProgress);
-                    // TODO: navigate ke home/dashboard setelah selesai
+
+                    // Delay sebentar di 100% agar user sempat melihat, lalu ke NotificationActivity
+                    handler.postDelayed(() -> {
+                        if (!isAdded()) return;
+                        android.content.Intent intent = new android.content.Intent(
+                                requireContext(), NotificationActivity.class);
+                        // Hapus semua back stack agar user tidak bisa back ke onboarding
+                        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                                | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }, 600);
                     return;
                 }
 
