@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
                 return true;
             } else if (id == R.id.nav_profile) {
-                // TODO: tampilkan ProfileFragment
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFragmentContainer, new ProfileFragment())
+                        .commit();
                 return true;
             }
             return false;

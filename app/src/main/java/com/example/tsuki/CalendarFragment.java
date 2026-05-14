@@ -51,9 +51,16 @@ public class CalendarFragment extends Fragment {
         setupSpinners(view);
         setupNavButtons(view);
         setupEditPeriodButton(view);
+        setupMenuButton(view);
 
         // Render bulan saat ini
         renderMonth();
+    }
+
+    private void setupMenuButton(View view) {
+        view.findViewById(R.id.btnMenuCalendar).setOnClickListener(v ->
+                startActivity(new android.content.Intent(requireContext(), NotificationActivity.class)));
+    }
     }
 
     // ─── Setup RecyclerView grid ───────────────────────────────────────────────

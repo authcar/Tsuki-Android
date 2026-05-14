@@ -43,6 +43,10 @@ public class LogFragment extends Fragment {
         tvLogDate = view.findViewById(R.id.tvLogDate);
         updateDateLabel();
 
+        // Menu button
+        view.findViewById(R.id.btnMenuLog).setOnClickListener(v ->
+                startActivity(new android.content.Intent(requireContext(), NotificationActivity.class)));
+
         // Date picker
         view.findViewById(R.id.datePickerCard).setOnClickListener(v -> {
             new DatePickerDialog(requireContext(),

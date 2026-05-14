@@ -21,6 +21,47 @@ public class LearnFragment extends Fragment {
     private ArticleAdapter adapter;
     private Article.Category currentCategory = Article.Category.PERIOD;
 
+    private static final String[] QUOTES = {
+            "Your body does something remarkable every month.\nTreat it with love and gentleness.",
+            "Listen to your body. It knows more than you think.",
+            "Rest is not laziness. It is part of healing.",
+            "You are stronger than your worst day.",
+            "Taking care of yourself is an act of love.",
+            "Your cycle is not a burden. It is a sign of life.",
+            "Be patient with yourself. Growth takes time.",
+            "Every phase of your cycle has its own beauty.",
+            "Nourish your body and it will take care of you.",
+            "You deserve rest, care, and kindness — especially from yourself.",
+            "Small steps every day lead to big changes.",
+            "Your health is your greatest wealth.",
+            "Embrace the rhythm of your body.",
+            "Healing is not linear. Be gentle with yourself.",
+            "You are enough, exactly as you are today.",
+            "Track your cycle, understand your body, love yourself.",
+            "Every month is a new beginning.",
+            "Your body is wise. Trust it.",
+            "Wellness is a journey, not a destination.",
+            "Breathe. You are doing better than you think.",
+            "Honor your energy levels — they change for a reason.",
+            "Self-care is not selfish. It is necessary.",
+            "Your feelings are valid, every day of the month.",
+            "A healthy body starts with a kind mind.",
+            "You are not alone in this journey.",
+            "Celebrate your body for all it does for you.",
+            "Rest when you need to. Rise when you are ready.",
+            "Your cycle is your superpower.",
+            "Be the friend to yourself that you are to others.",
+            "Today is a good day to take care of yourself."
+    };
+
+    private void setupQuoteOfTheDay(View view) {
+        android.widget.TextView tvQuote = view.findViewById(R.id.tvQuote);
+        // Gunakan dayOfYear sebagai index — quote sama untuk hari yang sama
+        int dayOfYear = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
+        String quote = QUOTES[dayOfYear % QUOTES.length];
+        tvQuote.setText(quote);
+    }
+
     // ─── Data artikel ─────────────────────────────────────────────────────────
 
     private List<Article> getAllArticles() {
@@ -92,6 +133,13 @@ public class LearnFragment extends Fragment {
         tabPeriod    = view.findViewById(R.id.tabPeriod);
         tabWellness  = view.findViewById(R.id.tabWellness);
         tabFertility = view.findViewById(R.id.tabFertility);
+
+        // Quote of the day
+        setupQuoteOfTheDay(view);
+
+        // Menu button
+        view.findViewById(R.id.btnMenuLearn).setOnClickListener(v ->
+                startActivity(new android.content.Intent(requireContext(), NotificationActivity.class)));
 
         // Setup RecyclerView
         RecyclerView rv = view.findViewById(R.id.rvArticles);

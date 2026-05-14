@@ -51,9 +51,16 @@ public class HomeFragment extends Fragment {
 
         setupGreeting();
         setupWeekStrip(view);
+        setupMenuButton(view);
 
         // Tampilkan info untuk hari ini saat pertama kali
         updateCycleInfo(Calendar.getInstance());
+    }
+
+    private void setupMenuButton(View view) {
+        view.findViewById(R.id.btnMenu).setOnClickListener(v ->
+                startActivity(new android.content.Intent(requireContext(), NotificationActivity.class)));
+    }
     }
 
     // ─── Greeting dinamis ─────────────────────────────────────────────────────
