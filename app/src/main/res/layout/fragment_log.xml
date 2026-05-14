@@ -1,84 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_babypink"
     android:scrollbars="none">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingBottom="32dp">
 
         <!-- ===== HEADER ===== -->
-
-        <TextView
-            android:id="@+id/tvCalendarTitle"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/dancing_script_medium"
-            android:gravity="center"
-            android:text="Log Today"
-            android:textColor="@color/navy"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginTop="20dp">
 
-        <ImageButton
-            android:id="@+id/btnMenuCalendar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_circle_white"
-            android:contentDescription="Menu"
-            android:padding="10dp"
-            android:src="@drawable/ic_menu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/dancing_script_medium"
+                android:text="Log Today"
+                android:textColor="@color/navy"
+                android:textSize="32sp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/editPeriodCard"
-            android:layout_width="0dp"
+            <ImageButton
+                android:id="@+id/btnMenuLog"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_circle_white"
+                android:contentDescription="Menu"
+                android:padding="10dp"
+                android:src="@drawable/ic_menu" />
+
+        </FrameLayout>
+
+        <!-- ===== DATE PICKER CARD ===== -->
+        <LinearLayout
+            android:id="@+id/datePickerCard"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_edit_period_card"
-            android:padding="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="34"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="">
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_date_picker_card"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="14dp">
 
             <ImageView
-                android:id="@+id/icEditClock"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_calendar"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_calendar" />
 
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+            <TextView
+                android:id="@+id/tvLogDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato"
+                android:textColor="@color/navy"
+                android:textSize="15sp" />
 
             <ImageView
-                android:id="@+id/icChevronEdit"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="8dp"
+                android:rotation="90"
+                android:src="@drawable/ic_chevron_right" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
+        <!-- ===== FLOW INTENSITY ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/lato_bold"
+            android:text="Flow Intensity"
+            android:textColor="@color/primary_pink"
+            android:textSize="16sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutFlow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
+            app:flexWrap="wrap"
+            app:alignItems="flex_start"
+            app:alignContent="flex_start">
+
+            <LinearLayout android:id="@+id/chipFlowLow" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_low_flow" />
+                <TextView style="@style/LogChipText" android:text="Low" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipFlowNormal" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_normal_flow" />
+                <TextView style="@style/LogChipText" android:text="Normal" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipFlowHigh" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_high_flow" />
+                <TextView style="@style/LogChipText" android:text="High" />
+            </LinearLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <!-- ===== SYMPTOMS ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/lato_bold"
+            android:text="Symptons"
+            android:textColor="@color/primary_pink"
+            android:textSize="16sp" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutSymptoms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
+            app:flexWrap="wrap"
+            app:alignItems="flex_start"
+            app:alignContent="flex_start">
+
+            <LinearLayout android:id="@+id/chipCramps" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_cramps" />
+                <TextView style="@style/LogChipText" android:text="Cramps" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipHeadaches" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_headaches" />
+                <TextView style="@style/LogChipText" android:text="Headaches" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipWeightGain" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_weightgain" />
+                <TextView style="@style/LogChipText" android:text="Weight gain" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipBloating" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_bloating" />
+                <TextView style="@style/LogChipText" android:text="Bloating" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipAcne" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_acne" />
+                <TextView style="@style/LogChipText" android:text="Acne" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipCravings" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_cravings" />
+                <TextView style="@style/LogChipText" android:text="Cravings" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipBackPain" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_backpain" />
+                <TextView style="@style/LogChipText" android:text="Back Pain" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipMoodSwings" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_moodswings" />
+                <TextView style="@style/LogChipText" android:text="Mood swings" />
+            </LinearLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <!-- ===== MOOD ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/lato_bold"
+            android:text="Mood"
+            android:textColor="@color/primary_pink"
+            android:textSize="16sp" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutMood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
+            app:flexWrap="wrap"
+            app:alignItems="flex_start"
+            app:alignContent="flex_start">
+
+            <LinearLayout android:id="@+id/chipHappy" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_happy" />
+                <TextView style="@style/LogChipText" android:text="Happy" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipCalm" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_calm" />
+                <TextView style="@style/LogChipText" android:text="Calm" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipSad" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_sad" />
+                <TextView style="@style/LogChipText" android:text="Sad" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipAnxious" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_anxious" />
+                <TextView style="@style/LogChipText" android:text="Anxious" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipLowEnergy" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_lowenergy" />
+                <TextView style="@style/LogChipText" android:text="Low Energy" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipCranky" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_cranky" />
+                <TextView style="@style/LogChipText" android:text="Cranky" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/chipSensitivity" style="@style/LogChip">
+                <ImageView style="@style/LogChipIcon" android:src="@drawable/log_sensitivity" />
+                <TextView style="@style/LogChipText" android:text="Sensitivity" />
+            </LinearLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <!-- ===== SAVE BUTTON ===== -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSaveLog"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_signup_button"
+            android:fontFamily="@font/lato_bold"
+            android:text="Save Log"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_button" />
+
+    </LinearLayout>
 
 </ScrollView>

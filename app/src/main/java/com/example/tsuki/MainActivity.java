@@ -47,7 +47,10 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
                 return true;
             } else if (id == R.id.nav_learn) {
-                // TODO: tampilkan LearnFragment
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFragmentContainer, new LearnFragment())
+                        .commit();
                 return true;
             } else if (id == R.id.nav_profile) {
                 // TODO: tampilkan ProfileFragment
@@ -58,7 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Handle tombol Log floating
         btnLog.setOnClickListener(v -> {
-            // TODO: buka LogFragment atau dialog
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.mainFragmentContainer, new LogFragment())
+                    .commit();
+            bottomNav.setSelectedItemId(R.id.nav_log);
         });
 
         // Set tab awal
