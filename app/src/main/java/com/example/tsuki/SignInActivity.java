@@ -147,7 +147,7 @@ public class SignInActivity extends AppCompatActivity {
         tvSignUp.setText(spannable);
         tvSignUp.setTextColor(ContextCompat.getColor(this, R.color.gray));
         tvSignUp.setOnClickListener(v -> {
-            startActivity(new Intent(this, SignUpChoiceActivity.class));
+            startActivity(new Intent(this, SignUpChoiceActivity.class)); // Mengarahkan ke SignUpChoiceActivity
             finish();
         });
     }

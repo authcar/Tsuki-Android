@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -23,6 +24,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 
 public class SignUpChoiceActivity extends AppCompatActivity {
 
@@ -95,10 +99,7 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                             startActivity(new Intent(this, ProfileSetupActivity.class));
                         } else {
                             btnSignUp.setEnabled(true);
-                            String msg = task.getException() != null
-                                    ? task.getException().getMessage()
-                                    : "Registration failed";
-                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                            showSignUpErrorDialog(task.getException());
                         }
                     });
         });
@@ -118,5 +119,56 @@ public class SignUpChoiceActivity extends AppCompatActivity {
         );
         tvSignIn.setText(spannable);
         tvSignIn.setTextColor(ContextCompat.getColor(this, R.color.gray));
+    }
+
+    private void showSignUpErrorDialog(Exception exception) {
+        String title;
+        String message;
+        String positiveButton;
+        Runnable positiveAction = null;
+
+        if (exception instanceof FirebaseAuthUserCollisionException) {
+            // Email sudah terdaftar
+            title   = "Email Already Registered";
+            message = "This email address is already associated with an account.\n\nWould you like to sign in instead?";
+            positiveButton = "Sign In";
+            positiveAction = () -> {
+                startActivity(new Intent(this, SignInActivity.class));
+                finish();
+            };
+        } else if (exception instanceof FirebaseAuthWeakPasswordException) {
+            // Password terlalu lemah
+            title   = "Password Too Weak";
+            message = "Your password must be at least 6 characters long. Please choose a stronger password.";
+            positiveButton = "OK";
+        } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+            // Format email tidak valid
+            title   = "Invalid Email";
+            message = "Please enter a valid email address (e.g. audrey@gmail.com).";
+            positiveButton = "OK";
+        } else {
+            // Error lain
+            title   = "Sign Up Failed";
+            message = exception != null ? exception.getMessage() : "An unexpected error occurred. Please try again.";
+            positiveButton = "OK";
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this) // menampilkan dialog
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(true);
+
+        Runnable finalPositiveAction = positiveAction;
+        builder.setPositiveButton(positiveButton, (dialog, which) -> {
+            dialog.dismiss();
+            if (finalPositiveAction != null) finalPositiveAction.run();
+        });
+
+        if (positiveAction != null) {
+            // Kalau ada aksi Sign In, tambahkan tombol Cancel
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        }
+
+        builder.show();
     }
 }

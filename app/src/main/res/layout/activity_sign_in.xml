@@ -258,6 +258,8 @@
                 android:id="@+id/tvSignUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/spacing_lg"
                 android:fontFamily="@font/lato"
