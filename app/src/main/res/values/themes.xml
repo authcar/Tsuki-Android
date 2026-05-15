@@ -33,6 +33,12 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
+    <!-- Dialog dengan rounded corners -->
+    <style name="DialogRounded" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
     <!-- Log chip styles -->
     <style name="LogChip">
         <item name="android:layout_width">wrap_content</item>
