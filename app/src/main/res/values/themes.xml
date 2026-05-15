@@ -5,9 +5,18 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.Tsuki" parent="Base.Theme.Tsuki" />
-
-    <!-- NavActiveIndicator tidak dipakai lagi -->
+    <style name="Theme.Tsuki" parent="Base.Theme.Tsuki">
+        <!-- Hilangkan indicator ungu di bottom nav -->
+        <item name="colorSecondaryContainer">@android:color/transparent</item>
+        <item name="colorOnSecondaryContainer">@color/gray</item>
+    </style>
+    
+    <!-- Nav active indicator — hilangkan background ungu -->
+    <style name="NavIndicatorStyle">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="android:color">@android:color/transparent</item>
+    </style>
 
     <!-- Bottom Navigation label font -->
     <style name="BottomNavTextAppearance" parent="@style/TextAppearance.MaterialComponents.Caption">

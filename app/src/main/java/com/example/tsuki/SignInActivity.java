@@ -24,6 +24,13 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
+
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -33,6 +40,10 @@ public class SignInActivity extends AppCompatActivity {
     private AppCompatButton btnSignIn;
     private TextView tvWrongPassword;
     private CheckBox checkTerms;
+
+    private static final int RC_GOOGLE_SIGN_IN = 9001;
+    private GoogleSignInClient googleSignInClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +57,19 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        findViewById(R.id.btnGoogle).setOnClickListener(v -> {
+            googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
+                startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN);  // konek ke google
+            });
+        });
+
 
         etEmail        = findViewById(R.id.etEmail);
         etPassword     = findViewById(R.id.etPassword);
@@ -87,6 +111,38 @@ public class SignInActivity extends AppCompatActivity {
         // Sign up link
         setupSignUpLink();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            try {
+                GoogleSignInAccount account = GoogleSignIn
+                        .getSignedInAccountFromIntent(data).getResult();
+                AuthCredential credential = GoogleAuthProvider
+                        .getCredential(account.getIdToken(), null);
+                mAuth.signInWithCredential(credential)
+                        .addOnSuccessListener(result -> {
+                            // Simpan nama & email
+                            getSharedPreferences("user_data", MODE_PRIVATE).edit()
+                                    .putString("user_name", account.getDisplayName())
+                                    .putString("user_email", account.getEmail())
+                                    .apply();
+                            // Navigate ke MainActivity
+                            Intent intent = new Intent(this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        })
+                        .addOnFailureListener(e ->
+                                android.widget.Toast.makeText(this,
+                                        "Google Sign In failed: " + e.getMessage(),
+                                        android.widget.Toast.LENGTH_SHORT).show());
+            } catch (Exception e) {
+                android.widget.Toast.makeText(this, "Cancelled.", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void updateButtonState() {
         boolean emailFilled    = etEmail.getText() != null && !etEmail.getText().toString().isEmpty();

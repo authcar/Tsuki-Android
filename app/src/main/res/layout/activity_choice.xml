@@ -77,6 +77,7 @@
                 android:layout_marginTop="@dimen/spacing_md"/>
 
                 <LinearLayout
+                    android:id="@+id/btnGoogleChoice"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
                     android:layout_marginTop="@dimen/spacing_md"

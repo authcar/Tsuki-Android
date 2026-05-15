@@ -10,7 +10,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.graphics.Typeface;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -21,14 +20,23 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignUpChoiceActivity extends AppCompatActivity {
+
+    private static final int RC_GOOGLE_SIGN_IN = 9001;
+    private GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +49,31 @@ public class SignUpChoiceActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Setup Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
         // Back button
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // Button color change when all fields filled
+        // Google Sign In button
+        findViewById(R.id.btnGoogle).setOnClickListener(v -> {
+            // Revoke dulu agar picker selalu muncul (tidak auto-login akun lama)
+            googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+            });
+        });
+
+        // Email/Password Sign Up
         AppCompatButton btnSignUp = findViewById(R.id.btnSignUp);
-        TextInputEditText etName = (TextInputEditText) ((TextInputLayout) findViewById(R.id.inputFullName)).getEditText();
-        TextInputEditText etEmail = (TextInputEditText) ((TextInputLayout) findViewById(R.id.inputEmail)).getEditText();
+        TextInputEditText etName     = (TextInputEditText) ((TextInputLayout) findViewById(R.id.inputFullName)).getEditText();
+        TextInputEditText etEmail    = (TextInputEditText) ((TextInputLayout) findViewById(R.id.inputEmail)).getEditText();
         TextInputEditText etPassword = (TextInputEditText) ((TextInputLayout) findViewById(R.id.inputPassword)).getEditText();
 
-        // Set initial state (disabled/gray)
         btnSignUp.setBackgroundResource(R.drawable.bg_signup_button_disabled);
         btnSignUp.setEnabled(false);
 
@@ -62,19 +85,16 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                 boolean filled = etName.getText() != null && !etName.getText().toString().isEmpty()
                         && etEmail.getText() != null && !etEmail.getText().toString().isEmpty()
                         && etPassword.getText() != null && !etPassword.getText().toString().isEmpty();
-
                 btnSignUp.setEnabled(filled);
                 btnSignUp.setBackgroundResource(filled
                         ? R.drawable.bg_signup_button
                         : R.drawable.bg_signup_button_disabled);
             }
         };
-
         etName.addTextChangedListener(watcher);
         etEmail.addTextChangedListener(watcher);
         etPassword.addTextChangedListener(watcher);
 
-        // Register user to Firebase Auth on sign up
         btnSignUp.setOnClickListener(v -> {
             String name     = etName.getText().toString().trim();
             String email    = etEmail.getText().toString().trim();
@@ -86,17 +106,7 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                     .createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            // Simpan nama ke SharedPreferences untuk ditampilkan di profil
-                            getSharedPreferences("user_data", MODE_PRIVATE)
-                                    .edit()
-                                    .putString("user_name", name)
-                                    .putString("user_email", email)
-                                    .apply();
-
-                            // Simpan profil ke Firestore
-                            new FirestoreManager().saveProfile(name, email, null, null);
-
-                            startActivity(new Intent(this, ProfileSetupActivity.class));
+                            saveUserAndProceed(name, email);
                         } else {
                             btnSignUp.setEnabled(true);
                             showSignUpErrorDialog(task.getException());
@@ -109,66 +119,99 @@ public class SignUpChoiceActivity extends AppCompatActivity {
         String full = "Already have an account? Sign in";
         SpannableString spannable = new SpannableString(full);
         int start = full.indexOf("Sign in");
-        spannable.setSpan(
-            new ForegroundColorSpan(ContextCompat.getColor(this, R.color.navy)),
-            start, full.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
-        spannable.setSpan(
-            new StyleSpan(Typeface.BOLD),
-            start, full.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
+        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.navy)),
+                start, full.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new StyleSpan(Typeface.BOLD),
+                start, full.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvSignIn.setText(spannable);
         tvSignIn.setTextColor(ContextCompat.getColor(this, R.color.gray));
     }
 
+    // ─── Google Sign In result ────────────────────────────────────────────────
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            try {
+                GoogleSignInAccount account = GoogleSignIn
+                        .getSignedInAccountFromIntent(data).getResult();
+                AuthCredential credential = GoogleAuthProvider
+                        .getCredential(account.getIdToken(), null);
+
+                FirebaseAuth.getInstance().signInWithCredential(credential)
+                        .addOnSuccessListener(result -> {
+                            String name  = account.getDisplayName() != null
+                                    ? account.getDisplayName() : "";
+                            String email = account.getEmail() != null
+                                    ? account.getEmail() : "";
+                            saveUserAndProceed(name, email);
+                        })
+                        .addOnFailureListener(e ->
+                                android.widget.Toast.makeText(this,
+                                        "Google Sign In failed: " + e.getMessage(),
+                                        android.widget.Toast.LENGTH_SHORT).show());
+            } catch (Exception e) {
+                android.widget.Toast.makeText(this,
+                        "Google Sign In cancelled.",
+                        android.widget.Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // ─── Helper: simpan user dan navigate ────────────────────────────────────
+
+    private void saveUserAndProceed(String name, String email) {
+        getSharedPreferences("user_data", MODE_PRIVATE)
+                .edit()
+                .putString("user_name", name)
+                .putString("user_email", email)
+                .apply();
+        new FirestoreManager().saveProfile(name, email, null, null);
+        startActivity(new Intent(this, ProfileSetupActivity.class));
+    }
+
+    // ─── Error dialog ─────────────────────────────────────────────────────────
+
     private void showSignUpErrorDialog(Exception exception) {
-        String title;
-        String message;
-        String positiveButton;
+        String title, message, positiveButton;
         Runnable positiveAction = null;
 
         if (exception instanceof FirebaseAuthUserCollisionException) {
-            // Email sudah terdaftar
-            title   = "Email Already Registered";
-            message = "This email address is already associated with an account.\n\nWould you like to sign in instead?";
+            title          = "Email Already Registered";
+            message        = "This email is already associated with an account.\n\nWould you like to sign in instead?";
             positiveButton = "Sign In";
             positiveAction = () -> {
                 startActivity(new Intent(this, SignInActivity.class));
                 finish();
             };
         } else if (exception instanceof FirebaseAuthWeakPasswordException) {
-            // Password terlalu lemah
-            title   = "Password Too Weak";
-            message = "Your password must be at least 6 characters long. Please choose a stronger password.";
+            title          = "Password Too Weak";
+            message        = "Your password must be at least 6 characters long.";
             positiveButton = "OK";
         } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-            // Format email tidak valid
-            title   = "Invalid Email";
-            message = "Please enter a valid email address (e.g. audrey@gmail.com).";
+            title          = "Invalid Email";
+            message        = "Please enter a valid email address (e.g. audrey@gmail.com).";
             positiveButton = "OK";
         } else {
-            // Error lain
-            title   = "Sign Up Failed";
-            message = exception != null ? exception.getMessage() : "An unexpected error occurred. Please try again.";
+            title          = "Sign Up Failed";
+            message        = exception != null ? exception.getMessage() : "An unexpected error occurred.";
             positiveButton = "OK";
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this) // menampilkan dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(true);
 
-        Runnable finalPositiveAction = positiveAction;
+        Runnable finalAction = positiveAction;
         builder.setPositiveButton(positiveButton, (dialog, which) -> {
             dialog.dismiss();
-            if (finalPositiveAction != null) finalPositiveAction.run();
+            if (finalAction != null) finalAction.run();
         });
-
         if (positiveAction != null) {
-            // Kalau ada aksi Sign In, tambahkan tombol Cancel
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         }
-
         builder.show();
     }
 }

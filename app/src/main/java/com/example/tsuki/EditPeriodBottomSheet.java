@@ -143,6 +143,14 @@ public class EditPeriodBottomSheet extends BottomSheetDialogFragment {
                     prefs.getInt("cycle_length", 28),
                     null, null);
 
+            // Schedule reminder notifikasi
+            ReminderScheduler.scheduleReminders(
+                    requireContext(),
+                    selectedStart.get(Calendar.DAY_OF_MONTH),
+                    selectedStart.get(Calendar.MONTH),
+                    selectedStart.get(Calendar.YEAR),
+                    prefs.getInt("cycle_length", 28));
+
             if (listener != null) listener.onPeriodSaved();
             dismiss();
         });

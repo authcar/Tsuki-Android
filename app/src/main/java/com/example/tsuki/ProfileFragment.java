@@ -77,12 +77,23 @@ public class ProfileFragment extends Fragment {
             // TODO: buka halaman Help Center
         });
 
-        // Log Out — Firebase sign out + kembali ke SplashActivity
+        // Log Out — Firebase sign out + Google sign out + kembali ke SplashActivity
         view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
+            // Sign out Firebase
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(requireContext(), SplashActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+
+            // Sign out Google agar picker muncul lagi saat login berikutnya
+            com.google.android.gms.auth.api.signin.GoogleSignIn
+                    .getClient(requireContext(),
+                            new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
+                                    com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .build())
+                    .signOut()
+                    .addOnCompleteListener(task -> {
+                        Intent intent = new Intent(requireContext(), SplashActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    });
         });
     }
 }

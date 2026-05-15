@@ -78,6 +78,11 @@ public class PeriodCalendarFragment extends Fragment {
                     periodLength, cycleLength,
                     null, null);
 
+            // Schedule reminder notifikasi
+            ReminderScheduler.scheduleReminders(
+                    requireContext(),
+                    startDay, startMonth, startYear, cycleLength);
+
             // Navigate ke LoadingFragment
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()

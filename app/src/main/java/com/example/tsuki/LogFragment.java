@@ -254,36 +254,42 @@ public class LogFragment extends Fragment {
                 selectedFlow,
                 new ArrayList<>(selectedSymptoms),
                 new ArrayList<>(selectedMoods),
-                () -> showSavedDialog(),
-                e -> android.widget.Toast.makeText(requireContext(),
-                        "Failed to save: " + e.getMessage(), android.widget.Toast.LENGTH_SHORT).show()
+                () -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(this::showSavedDialog);
+                    }
+                },
+                e -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() ->
+                                android.widget.Toast.makeText(requireContext(),
+                                        "Failed to save: " + e.getMessage(),
+                                        android.widget.Toast.LENGTH_SHORT).show());
+                    }
+                }
         );
     }
 
     private void showSavedDialog() {
         if (!isAdded()) return;
 
-        // Inflate layout custom
         android.view.View dialogView = android.view.LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_log_saved, null);
 
-        // Set teks tanggal
         android.widget.TextView tvDate = dialogView.findViewById(R.id.tvDialogDate);
+        // Format tanggal yang valid — tidak ada karakter 'o'
         java.text.SimpleDateFormat fmt = new java.text.SimpleDateFormat(
-                "Log for EEEE, MMM d", java.util.Locale.getDefault());
-        tvDate.setText(fmt.format(selectedDate.getTime()) + " has been saved.");
+                "EEE, MMM d yyyy", java.util.Locale.getDefault());
+        tvDate.setText("Log for " + fmt.format(selectedDate.getTime()) + " has been saved.");
 
-        // Buat dialog
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(
                 requireContext(), R.style.DialogRounded)
                 .setView(dialogView)
                 .setCancelable(false)
                 .create();
 
-        // Tombol OK tutup dialog
         dialogView.findViewById(R.id.btnDialogOk).setOnClickListener(v -> dialog.dismiss());
 
-        // Buat background dialog transparan agar rounded corner terlihat
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }

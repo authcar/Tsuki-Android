@@ -225,7 +225,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/lato"
-                    android:text="Logged period"
+                    android:text="Today"
                     android:textColor="@color/gray"
                     android:textSize="13sp" />
 
@@ -303,8 +303,9 @@
                     tools:visibility="visible">
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/lato_bold"
                         android:text="Flow"
                         android:textColor="@color/gray"
@@ -337,8 +338,9 @@
                     tools:visibility="visible">
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/lato_bold"
                         android:text="Symptoms"
                         android:textColor="@color/gray"
@@ -367,8 +369,9 @@
                     tools:visibility="visible">
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/lato_bold"
                         android:text="Mood"
                         android:textColor="@color/gray"

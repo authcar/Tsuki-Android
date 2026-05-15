@@ -1,7 +1,6 @@
 package com.example.tsuki;
 
 import android.os.Bundle;
-import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Buat notification channel
+        NotificationHelper.createNotificationChannel(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -25,13 +27,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-        ImageButton btnLog = findViewById(R.id.btnLog);
 
-        // Sembunyikan item Log bawaan BottomNavigationView (digantikan btnLog)
-        bottomNav.getMenu().findItem(R.id.nav_log).setEnabled(false);
-        bottomNav.getMenu().findItem(R.id.nav_log).setVisible(false);
-
-        // Handle navigasi tab
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -44,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.mainFragmentContainer, new CalendarFragment())
+                        .commit();
+                return true;
+            } else if (id == R.id.nav_log) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFragmentContainer, new LogFragment())
                         .commit();
                 return true;
             } else if (id == R.id.nav_learn) {
@@ -62,19 +64,9 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // Handle tombol Log floating
-        btnLog.setOnClickListener(v -> {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFragmentContainer, new LogFragment())
-                    .commit();
-            bottomNav.setSelectedItemId(R.id.nav_log);
-        });
-
         // Set tab awal
         bottomNav.setSelectedItemId(R.id.nav_home);
 
-        // Load HomeFragment sebagai konten awal
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()

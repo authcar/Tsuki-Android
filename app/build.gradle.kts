@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.tbuonomo:dotsindicator:4.3")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))

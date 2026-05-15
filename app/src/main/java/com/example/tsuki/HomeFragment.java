@@ -204,7 +204,7 @@ public class HomeFragment extends Fragment {
                 selectedDate, periodStart, periodLen, cycleLen);
 
         tvPhase.setText(info.phaseName);
-        tvDayCount.setText("Day " + info.cycleDay);
+        tvDayCount.setText("Day " + info.dayInPhase); // ← pakai dayInPhase, bukan cycleDay
 
         String daysLeftText;
         if (info.daysLeftInPhase == 0) {
