@@ -79,7 +79,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.DayVie
                     break;
                 case OVULATION:
                     holder.dayBg.setVisibility(View.VISIBLE);
-                    holder.dayBg.setBackgroundResource(R.drawable.bg_calendar_day_ovulation);
+                    holder.dayBg.setBackgroundResource(R.drawable.bg_calendar_day_ovulation); //background warna
                     holder.tvDay.setTextColor(
                             ContextCompat.getColor(holder.itemView.getContext(), R.color.navy));
                     break;

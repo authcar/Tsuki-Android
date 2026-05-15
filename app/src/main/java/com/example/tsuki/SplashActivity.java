@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
                 intent = new Intent(this, MainActivity.class);
             } else {
                 // Belum login → ke onboarding
-                intent = new Intent(this, Onboarding1Activity.class);
+                intent = new Intent(this, OnboardingActivity.class);
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
