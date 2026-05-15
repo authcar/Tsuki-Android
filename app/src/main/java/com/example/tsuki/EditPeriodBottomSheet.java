@@ -134,6 +134,15 @@ public class EditPeriodBottomSheet extends BottomSheetDialogFragment {
                     .putInt("period_length",       periodLength)
                     .apply();
 
+            // Simpan ke Firestore
+            new FirestoreManager().saveCycleData(
+                    selectedStart.get(Calendar.DAY_OF_MONTH),
+                    selectedStart.get(Calendar.MONTH),
+                    selectedStart.get(Calendar.YEAR),
+                    periodLength,
+                    prefs.getInt("cycle_length", 28),
+                    null, null);
+
             if (listener != null) listener.onPeriodSaved();
             dismiss();
         });

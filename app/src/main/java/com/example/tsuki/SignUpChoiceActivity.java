@@ -10,6 +10,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.graphics.Typeface;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.widget.AppCompatButton;
@@ -21,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpChoiceActivity extends AppCompatActivity {
 
@@ -68,9 +70,37 @@ public class SignUpChoiceActivity extends AppCompatActivity {
         etEmail.addTextChangedListener(watcher);
         etPassword.addTextChangedListener(watcher);
 
-        // Navigate to ProfileSetupActivity on sign up
+        // Register user to Firebase Auth on sign up
         btnSignUp.setOnClickListener(v -> {
-            startActivity(new Intent(this, ProfileSetupActivity.class));
+            String name     = etName.getText().toString().trim();
+            String email    = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString();
+
+            btnSignUp.setEnabled(false);
+
+            FirebaseAuth.getInstance()
+                    .createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Simpan nama ke SharedPreferences untuk ditampilkan di profil
+                            getSharedPreferences("user_data", MODE_PRIVATE)
+                                    .edit()
+                                    .putString("user_name", name)
+                                    .putString("user_email", email)
+                                    .apply();
+
+                            // Simpan profil ke Firestore
+                            new FirestoreManager().saveProfile(name, email, null, null);
+
+                            startActivity(new Intent(this, ProfileSetupActivity.class));
+                        } else {
+                            btnSignUp.setEnabled(true);
+                            String msg = task.getException() != null
+                                    ? task.getException().getMessage()
+                                    : "Registration failed";
+                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
 
         // "Already have an account? Sign in"

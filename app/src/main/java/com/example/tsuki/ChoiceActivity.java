@@ -27,6 +27,10 @@ public class ChoiceActivity extends AppCompatActivity {
         findViewById(R.id.btnSignUp).setOnClickListener(v -> {
             startActivity(new Intent(ChoiceActivity.this, SignUpChoiceActivity.class));
         });
+
+        findViewById(R.id.btnSignIn).setOnClickListener(v -> {
+            startActivity(new Intent(ChoiceActivity.this, SignInActivity.class));
+        });
     }
 }
 

@@ -49,19 +49,36 @@ public class PeriodCalendarFragment extends Fragment {
         });
 
         btnContinue.setOnClickListener(v -> {
-            // Simpan tanggal period ke SharedPreferences
             java.util.Calendar selected = java.util.Calendar.getInstance();
             selected.setTimeInMillis(selectedDateMillis);
 
+            int startDay   = selected.get(java.util.Calendar.DAY_OF_MONTH);
+            int startMonth = selected.get(java.util.Calendar.MONTH);
+            int startYear  = selected.get(java.util.Calendar.YEAR);
+
+            // Ambil period_length yang dikirim dari PeriodFragment
+            int periodLength = getArguments() != null
+                    ? getArguments().getInt("period_length", 5) : 5;
+            int cycleLength  = 28; // default, bisa ditambahkan input nanti
+
+            // Simpan ke SharedPreferences (cache lokal)
             android.content.SharedPreferences prefs = requireContext()
                     .getSharedPreferences("cycle_data", android.content.Context.MODE_PRIVATE);
             prefs.edit()
-                    .putInt("period_start_day",   selected.get(java.util.Calendar.DAY_OF_MONTH))
-                    .putInt("period_start_month", selected.get(java.util.Calendar.MONTH))
-                    .putInt("period_start_year",  selected.get(java.util.Calendar.YEAR))
+                    .putInt("period_start_day",   startDay)
+                    .putInt("period_start_month", startMonth)
+                    .putInt("period_start_year",  startYear)
+                    .putInt("period_length",       periodLength)
+                    .putInt("cycle_length",        cycleLength)
                     .apply();
 
-            // Navigate ke LoadingFragment — tanpa addToBackStack agar tidak bisa back ke sini
+            // Simpan ke Firestore
+            new FirestoreManager().saveCycleData(
+                    startDay, startMonth, startYear,
+                    periodLength, cycleLength,
+                    null, null);
+
+            // Navigate ke LoadingFragment
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(

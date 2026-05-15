@@ -7,24 +7,30 @@ import android.os.Handler;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
 
-        // Splash 2 detik lalu pindah ke onboarding
         new Handler().postDelayed(() -> {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            Intent i = new Intent(
-                    SplashActivity.this,
-                    Onboarding1Activity.class
-            );
-
-            startActivity(i);
+            Intent intent;
+            if (currentUser != null) {
+                // User sudah login → langsung ke MainActivity
+                intent = new Intent(this, MainActivity.class);
+            } else {
+                // Belum login → ke onboarding
+                intent = new Intent(this, Onboarding1Activity.class);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
 
         }, 2000);

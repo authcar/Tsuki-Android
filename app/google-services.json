@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "747447906811",
+    "project_id": "tsuki-572e1",
+    "storage_bucket": "tsuki-572e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747447906811:android:773b971d1b1c4e799a9b5e",
+        "android_client_info": {
+          "package_name": "com.example.tsuki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "747447906811-lk5i5sui5lbnk6dr348q08rgl0t7rmve.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tsuki",
+            "certificate_hash": "5666499aa12e8a0286bdca7241b87299b98e9a06"
+          }
+        },
+        {
+          "client_id": "747447906811-uvtnmlaslh1o23i6rdt1lgmi5m6l59pf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfNEG0UUlH8e4D99eNP97oXztx9JHu8OU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "747447906811-uvtnmlaslh1o23i6rdt1lgmi5m6l59pf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

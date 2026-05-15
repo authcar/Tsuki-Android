@@ -56,6 +56,15 @@ public class NameFragment extends Fragment {
                     ? inputName.getText().toString().trim()
                     : "";
 
+            // Simpan nama ke SharedPreferences
+            requireContext().getSharedPreferences("user_data", android.content.Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("user_name", name)
+                    .apply();
+
+            // Simpan ke Firestore juga
+            new FirestoreManager().saveProfile(name, "", null, null);
+
             BirthdayFragment birthdayFragment = new BirthdayFragment();
             Bundle args = new Bundle();
             args.putString(BirthdayFragment.ARG_NAME, name);

@@ -42,6 +42,12 @@ public class PeriodFragment extends Fragment {
         btnContinue.setOnClickListener(v -> {
             int selectedDays = numberPicker.getValue();
 
+            // Simpan period_length ke SharedPreferences dulu
+            requireContext().getSharedPreferences("cycle_data", android.content.Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt("period_length", selectedDays)
+                    .apply();
+
             PeriodCalendarFragment nextFragment = new PeriodCalendarFragment();
             Bundle args = new Bundle();
             args.putInt("period_length", selectedDays);

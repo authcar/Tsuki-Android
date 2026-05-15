@@ -63,11 +63,11 @@
       android:id="@+id/btnNext2"
       android:layout_width="63dp"
       android:layout_height="44dp"
-      android:layout_marginTop="24dp"
+      android:layout_marginBottom="48dp"
       android:backgroundTint="#F0558B"
       android:text=">"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/textView3"
       app:rippleColor="#D97AAF" />
 </androidx.constraintlayout.widget.ConstraintLayout>

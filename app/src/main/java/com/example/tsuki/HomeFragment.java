@@ -52,15 +52,73 @@ public class HomeFragment extends Fragment {
         setupGreeting();
         setupWeekStrip(view);
         setupMenuButton(view);
+        setupUserName(view);
 
         // Tampilkan info untuk hari ini saat pertama kali
         updateCycleInfo(Calendar.getInstance());
+        updatePredictionCards(view);
+    }
+
+    private void setupUserName(View view) {
+        android.widget.TextView tvName = view.findViewById(R.id.tvName);
+        String name = requireContext()
+                .getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                .getString("user_name", "");
+        if (!name.isEmpty()) {
+            String display = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+            tvName.setText(display);
+        }
     }
 
     private void setupMenuButton(View view) {
         view.findViewById(R.id.btnMenu).setOnClickListener(v ->
                 startActivity(new android.content.Intent(requireContext(), NotificationActivity.class)));
     }
+
+    // ─── Prediction cards ─────────────────────────────────────────────────────
+
+    private void updatePredictionCards(View view) {
+        SharedPreferences prefs = requireContext()
+                .getSharedPreferences("cycle_data", Context.MODE_PRIVATE);
+
+        int startDay   = prefs.getInt("period_start_day",   -1);
+        int startMonth = prefs.getInt("period_start_month", -1);
+        int startYear  = prefs.getInt("period_start_year",  -1);
+        int cycleLen   = prefs.getInt("cycle_length",       28);
+
+        TextView tvNextPeriod  = view.findViewById(R.id.tvNextPeriodDate);
+        TextView tvOvulation   = view.findViewById(R.id.tvOvulationDate);
+        TextView tvFertile     = view.findViewById(R.id.tvFertileDate);
+
+        if (startDay == -1) {
+            tvNextPeriod.setText("--");
+            tvOvulation.setText("--");
+            tvFertile.setText("-- - --");
+            return;
+        }
+
+        SimpleDateFormat fmt = new SimpleDateFormat("MMM d", Locale.getDefault());
+
+        // Next period = period start + cycleLength
+        Calendar nextPeriod = Calendar.getInstance();
+        nextPeriod.set(startYear, startMonth, startDay);
+        nextPeriod.add(Calendar.DAY_OF_YEAR, cycleLen);
+        tvNextPeriod.setText(fmt.format(nextPeriod.getTime()));
+
+        // Ovulation = period start + (cycleLength - 14)
+        Calendar ovulation = Calendar.getInstance();
+        ovulation.set(startYear, startMonth, startDay);
+        ovulation.add(Calendar.DAY_OF_YEAR, cycleLen - 14);
+        tvOvulation.setText(fmt.format(ovulation.getTime()));
+
+        // Fertile window = ovulation - 5 s/d ovulation + 1
+        Calendar fertileStart = (Calendar) ovulation.clone();
+        fertileStart.add(Calendar.DAY_OF_YEAR, -5);
+        Calendar fertileEnd = (Calendar) ovulation.clone();
+        fertileEnd.add(Calendar.DAY_OF_YEAR, 1);
+        tvFertile.setText(fmt.format(fertileStart.getTime())
+                + "  -  "
+                + fmt.format(fertileEnd.getTime()));
     }
 
     // ─── Greeting dinamis ─────────────────────────────────────────────────────
