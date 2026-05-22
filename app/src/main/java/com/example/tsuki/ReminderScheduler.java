@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -123,12 +124,33 @@ public class ReminderScheduler {
                 context, notifId, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Gunakan setExactAndAllowWhileIdle agar notifikasi tepat waktu
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
-        } else {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // Android 12+ (API 31): canScheduleExactAlarms() harus true
+                // Android 6-11: setExactAndAllowWhileIdle tidak butuh permission khusus
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        && !alarmManager.canScheduleExactAlarms()) {
+                    // Fallback ke inexact alarm — tidak crash, notifikasi tetap muncul
+                    alarmManager.setWindow(
+                            AlarmManager.RTC_WAKEUP,
+                            triggerAtMillis,
+                            AlarmManager.INTERVAL_HOUR,
+                            pi);
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
+                }
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
+            }
+        } catch (SecurityException e) {
+            // Fallback jika permission dicabut saat runtime
+            Log.w("ReminderScheduler", "Exact alarm permission denied, using inexact fallback", e);
+            alarmManager.setWindow(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMillis,
+                    AlarmManager.INTERVAL_HOUR,
+                    pi);
         }
     }
 }

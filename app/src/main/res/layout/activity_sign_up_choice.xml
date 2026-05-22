@@ -251,16 +251,6 @@
                     android:src="@drawable/ic_google" />
 
                 <ImageButton
-                    android:id="@+id/btnApple"
-                    android:layout_width="@dimen/social_button_size"
-                    android:layout_height="@dimen/social_button_size"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:background="@drawable/bg_social_button"
-                    android:contentDescription="Sign in with Apple"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_apple" />
-
-                <ImageButton
                     android:id="@+id/btnFacebook"
                     android:layout_width="@dimen/social_button_size"
                     android:layout_height="@dimen/social_button_size"

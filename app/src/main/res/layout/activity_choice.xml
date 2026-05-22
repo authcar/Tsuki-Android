@@ -106,35 +106,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:background="@drawable/signupbuttongoogle"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:paddingStart="10dp"
-                    android:layout_margin="10dp"
-                    android:paddingEnd="10dp">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_apple"
-                        android:layout_marginRight="20dp"
-                        android:contentDescription="Apple" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:fontFamily="@font/lato"
-                        android:text="Continue with Apple"
-                        android:textColor="@color/navy"
-                        android:textSize="@dimen/text_button"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
+                    android:id="@+id/btnFacebookChoice"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
                     android:layout_marginTop="@dimen/spacing_sm"

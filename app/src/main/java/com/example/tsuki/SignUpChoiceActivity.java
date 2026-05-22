@@ -20,6 +20,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,16 +33,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Arrays;
+
 public class SignUpChoiceActivity extends AppCompatActivity {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
     private GoogleSignInClient googleSignInClient;
+    private CallbackManager facebookCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +66,40 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Setup Facebook Login
+        facebookCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(facebookCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+                    }
+                    @Override
+                    public void onCancel() {
+                        android.widget.Toast.makeText(SignUpChoiceActivity.this,
+                                "Facebook login cancelled.", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(FacebookException error) {
+                        android.widget.Toast.makeText(SignUpChoiceActivity.this,
+                                "Facebook login failed: " + error.getMessage(),
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         // Back button
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // Google Sign In button
-        findViewById(R.id.btnGoogle).setOnClickListener(v -> {
-            // Revoke dulu agar picker selalu muncul (tidak auto-login akun lama)
-            googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
-                Intent signInIntent = googleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
-            });
-        });
+        findViewById(R.id.btnGoogle).setOnClickListener(v ->
+                googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
+                    startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN);
+                }));
+
+        // Facebook Sign In button
+        findViewById(R.id.btnFacebook).setOnClickListener(v ->
+                LoginManager.getInstance().logInWithReadPermissions(
+                        this, Arrays.asList("email", "public_profile")));
 
         // Email/Password Sign Up
         AppCompatButton btnSignUp = findViewById(R.id.btnSignUp);
@@ -99,9 +132,7 @@ public class SignUpChoiceActivity extends AppCompatActivity {
             String name     = etName.getText().toString().trim();
             String email    = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
-
             btnSignUp.setEnabled(false);
-
             FirebaseAuth.getInstance()
                     .createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
@@ -125,20 +156,46 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                 start, full.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvSignIn.setText(spannable);
         tvSignIn.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        tvSignIn.setOnClickListener(v -> {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+        });
     }
 
-    // ─── Google Sign In result ────────────────────────────────────────────────
+    // ─── Facebook token → Firebase ────────────────────────────────────────────
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnSuccessListener(result -> {
+                    com.google.firebase.auth.FirebaseUser user =
+                            FirebaseAuth.getInstance().getCurrentUser();
+                    String name  = user != null && user.getDisplayName() != null
+                            ? user.getDisplayName() : "";
+                    String email = user != null && user.getEmail() != null
+                            ? user.getEmail() : "";
+                    saveUserAndProceed(name, email);
+                })
+                .addOnFailureListener(e ->
+                        android.widget.Toast.makeText(this,
+                                "Facebook Sign In failed: " + e.getMessage(),
+                                android.widget.Toast.LENGTH_SHORT).show());
+    }
+
+    // ─── onActivityResult — handle Google + Facebook ──────────────────────────
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Facebook harus dipanggil duluan
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             try {
                 GoogleSignInAccount account = GoogleSignIn
                         .getSignedInAccountFromIntent(data).getResult();
                 AuthCredential credential = GoogleAuthProvider
                         .getCredential(account.getIdToken(), null);
-
                 FirebaseAuth.getInstance().signInWithCredential(credential)
                         .addOnSuccessListener(result -> {
                             String name  = account.getDisplayName() != null
@@ -153,65 +210,53 @@ public class SignUpChoiceActivity extends AppCompatActivity {
                                         android.widget.Toast.LENGTH_SHORT).show());
             } catch (Exception e) {
                 android.widget.Toast.makeText(this,
-                        "Google Sign In cancelled.",
-                        android.widget.Toast.LENGTH_SHORT).show();
+                        "Google Sign In cancelled.", android.widget.Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    // ─── Helper: simpan user dan navigate ────────────────────────────────────
+    // ─── Helper ───────────────────────────────────────────────────────────────
 
     private void saveUserAndProceed(String name, String email) {
-        getSharedPreferences("user_data", MODE_PRIVATE)
-                .edit()
+        getSharedPreferences("user_data", MODE_PRIVATE).edit()
                 .putString("user_name", name)
                 .putString("user_email", email)
                 .apply();
         new FirestoreManager().saveProfile(name, email, null, null);
-        startActivity(new Intent(this, ProfileSetupActivity.class));
+        Intent intent = new Intent(this, ProfileSetupActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
-
-    // ─── Error dialog ─────────────────────────────────────────────────────────
 
     private void showSignUpErrorDialog(Exception exception) {
         String title, message, positiveButton;
         Runnable positiveAction = null;
 
         if (exception instanceof FirebaseAuthUserCollisionException) {
-            title          = "Email Already Registered";
-            message        = "This email is already associated with an account.\n\nWould you like to sign in instead?";
+            title = "Email Already Registered";
+            message = "This email is already associated with an account.\n\nWould you like to sign in instead?";
             positiveButton = "Sign In";
-            positiveAction = () -> {
-                startActivity(new Intent(this, SignInActivity.class));
-                finish();
-            };
+            positiveAction = () -> { startActivity(new Intent(this, SignInActivity.class)); finish(); };
         } else if (exception instanceof FirebaseAuthWeakPasswordException) {
-            title          = "Password Too Weak";
-            message        = "Your password must be at least 6 characters long.";
+            title = "Password Too Weak";
+            message = "Your password must be at least 6 characters long.";
             positiveButton = "OK";
         } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-            title          = "Invalid Email";
-            message        = "Please enter a valid email address (e.g. audrey@gmail.com).";
+            title = "Invalid Email";
+            message = "Please enter a valid email address.";
             positiveButton = "OK";
         } else {
-            title          = "Sign Up Failed";
-            message        = exception != null ? exception.getMessage() : "An unexpected error occurred.";
+            title = "Sign Up Failed";
+            message = exception != null ? exception.getMessage() : "An unexpected error occurred.";
             positiveButton = "OK";
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setCancelable(true);
-
+                .setTitle(title).setMessage(message).setCancelable(true);
         Runnable finalAction = positiveAction;
-        builder.setPositiveButton(positiveButton, (dialog, which) -> {
-            dialog.dismiss();
-            if (finalAction != null) finalAction.run();
-        });
-        if (positiveAction != null) {
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-        }
+        builder.setPositiveButton(positiveButton, (d, w) -> { d.dismiss(); if (finalAction != null) finalAction.run(); });
+        if (positiveAction != null) builder.setNegativeButton("Cancel", (d, w) -> d.dismiss());
         builder.show();
     }
 }

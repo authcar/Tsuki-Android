@@ -62,6 +62,7 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:4.3")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.facebook.android:facebook-login:17.0.1")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))

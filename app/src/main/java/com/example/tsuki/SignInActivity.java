@@ -24,6 +24,12 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -43,6 +49,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
     private GoogleSignInClient googleSignInClient;
+    private CallbackManager facebookCallbackManager;
 
 
     @Override
@@ -64,6 +71,47 @@ public class SignInActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Setup Facebook Login
+        facebookCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(facebookCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        AuthCredential credential = com.google.firebase.auth.FacebookAuthProvider
+                                .getCredential(loginResult.getAccessToken().getToken());
+                        mAuth.signInWithCredential(credential)
+                                .addOnSuccessListener(result -> {
+                                    com.google.firebase.auth.FirebaseUser user =
+                                            FirebaseAuth.getInstance().getCurrentUser();
+                                    if (user != null) {
+                                        getSharedPreferences("user_data", MODE_PRIVATE).edit()
+                                                .putString("user_name", user.getDisplayName() != null ? user.getDisplayName() : "")
+                                                .putString("user_email", user.getEmail() != null ? user.getEmail() : "")
+                                                .apply();
+                                    }
+                                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                })
+                                .addOnFailureListener(e ->
+                                        android.widget.Toast.makeText(SignInActivity.this,
+                                                "Facebook Sign In failed: " + e.getMessage(),
+                                                android.widget.Toast.LENGTH_SHORT).show());
+                    }
+                    @Override public void onCancel() {}
+                    @Override public void onError(FacebookException error) {
+                        android.widget.Toast.makeText(SignInActivity.this,
+                                "Facebook error: " + error.getMessage(),
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Facebook button
+        findViewById(R.id.btnFacebook).setOnClickListener(v ->
+                LoginManager.getInstance().logInWithReadPermissions(
+                        this, java.util.Arrays.asList("email", "public_profile")));
+
+        // Google button
         findViewById(R.id.btnGoogle).setOnClickListener(v -> {
             googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
                 startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN);  // konek ke google
@@ -114,6 +162,7 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             try {

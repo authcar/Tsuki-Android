@@ -16,11 +16,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 
 public class ChoiceActivity extends AppCompatActivity {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
     private GoogleSignInClient googleSignInClient;
+    private CallbackManager facebookCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,52 @@ public class ChoiceActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Setup Facebook Login
+        facebookCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(facebookCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        AuthCredential credential = com.google.firebase.auth.FacebookAuthProvider
+                                .getCredential(loginResult.getAccessToken().getToken());
+                        FirebaseAuth.getInstance().signInWithCredential(credential)
+                                .addOnSuccessListener(result -> {
+                                    com.google.firebase.auth.FirebaseUser user =
+                                            FirebaseAuth.getInstance().getCurrentUser();
+                                    String name  = user != null && user.getDisplayName() != null ? user.getDisplayName() : "";
+                                    String email = user != null && user.getEmail() != null ? user.getEmail() : "";
+
+                                    getSharedPreferences("user_data", MODE_PRIVATE).edit()
+                                            .putString("user_name", name)
+                                            .putString("user_email", email)
+                                            .apply();
+                                    new FirestoreManager().saveProfile(name, email, null, null);
+
+                                    boolean isNewUser = result.getAdditionalUserInfo() != null
+                                            && result.getAdditionalUserInfo().isNewUser();
+
+                                    if (isNewUser) {
+                                        startActivity(new Intent(ChoiceActivity.this, ProfileSetupActivity.class));
+                                    } else {
+                                        Intent intent = new Intent(ChoiceActivity.this, MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    }
+                                    finish();
+                                })
+                                .addOnFailureListener(e ->
+                                        android.widget.Toast.makeText(ChoiceActivity.this,
+                                                "Facebook Sign In failed: " + e.getMessage(),
+                                                android.widget.Toast.LENGTH_SHORT).show());
+                    }
+                    @Override public void onCancel() {}
+                    @Override public void onError(FacebookException error) {
+                        android.widget.Toast.makeText(ChoiceActivity.this,
+                                "Facebook error: " + error.getMessage(),
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         findViewById(R.id.btnSignUp).setOnClickListener(v ->
@@ -54,10 +107,16 @@ public class ChoiceActivity extends AppCompatActivity {
                 startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN);
             });
         });
+
+        // "Continue with Facebook" button
+        findViewById(R.id.btnFacebookChoice).setOnClickListener(v ->
+                LoginManager.getInstance().logInWithReadPermissions(
+                        this, java.util.Arrays.asList("email", "public_profile")));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             try {
