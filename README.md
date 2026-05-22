@@ -9,9 +9,10 @@ Tsuki adalah aplikasi Android untuk pelacakan siklus menstruasi. Nama "Tsuki" be
 ### Autentikasi
 - **Sign Up / Sign In via Email** — Registrasi dan login dengan validasi error (email duplikat, password lemah, dll.)
 - **Google Sign In** — Login menggunakan akun Google via Firebase Auth
+- **Facebook Sign In** — Login menggunakan akun Facebook via Facebook SDK + Firebase Auth
 - **Forgot Password** — Reset password melalui email link dari Firebase
 - **Session Persistence** — App mengingat status login; user tidak perlu login ulang setiap buka app
-- **Logout** — Sign out dari Firebase dan Google secara bersamaan
+- **Logout** — Sign out dari Firebase, Google, dan Facebook secara bersamaan
 
 ### Onboarding
 - **Splash Screen** — Layar pembuka yang cek status login; redirect ke onboarding atau home
@@ -52,6 +53,7 @@ Tsuki adalah aplikasi Android untuk pelacakan siklus menstruasi. Nama "Tsuki" be
 - **Period Reminder** — Notifikasi otomatis 3 hari sebelum, 1 hari sebelum, dan hari H period
 - **Fertile Window Reminder** — Notifikasi saat fertile window dimulai
 - **AlarmManager** — Notifikasi bekerja meski app ditutup
+- **Graceful Fallback** — Jika permission `SCHEDULE_EXACT_ALARM` belum di-grant (Android 12+), otomatis fallback ke inexact alarm tanpa crash
 
 ---
 
@@ -67,10 +69,11 @@ Tsuki adalah aplikasi Android untuk pelacakan siklus menstruasi. Nama "Tsuki" be
 
 ### Firebase
 
-| Layanan | Kegunaan |
-|---|---|
-| Firebase Authentication | Email/Password login, Google Sign In, password reset |
-| Cloud Firestore | Penyimpanan data profil, siklus, dan log harian di cloud |
+| Layanan | Versi | Kegunaan |
+|---|---|---|
+| Firebase BOM | 33.7.0 | Bill of Materials untuk versi Firebase |
+| Firebase Authentication | — | Email/Password login, Google Sign In, Facebook Sign In, password reset |
+| Cloud Firestore | — | Penyimpanan data profil, siklus, dan log harian di cloud |
 
 ### UI Libraries
 
@@ -83,6 +86,8 @@ Tsuki adalah aplikasi Android untuk pelacakan siklus menstruasi. Nama "Tsuki" be
 | ViewPager2 | 1.0.0 | Onboarding carousel |
 | DotsIndicator | 4.3 | Indikator halaman onboarding |
 | FlexboxLayout | 3.0.0 | Chip wrap otomatis di Log fragment |
+| Play Services Auth | 21.3.0 | Google Sign In |
+| Facebook Login SDK | 17.0.1 | Facebook Sign In |
 
 ### Penyimpanan Lokal
 
@@ -197,4 +202,3 @@ Aplikasi dalam tahap pengembangan aktif. Fitur inti yang sudah diimplementasikan
 
 Fitur yang direncanakan:
 - Sinkronisasi data siklus dari multiple log untuk meningkatkan akurasi prediksi
-- Integrasi Apple dan Facebook Sign In
