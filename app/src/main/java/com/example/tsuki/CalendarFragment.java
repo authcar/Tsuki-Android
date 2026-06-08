@@ -135,8 +135,10 @@ public class CalendarFragment extends Fragment {
     private void setupEditPeriodButton(View view) {
         view.findViewById(R.id.editPeriodCard).setOnClickListener(v -> {
             EditPeriodBottomSheet sheet = new EditPeriodBottomSheet();
-            sheet.setOnPeriodSavedListener(() -> renderMonth());
-            sheet.show(getParentFragmentManager(), "edit_period");
+            sheet.setOnPeriodSavedListener(() -> {
+                if (isAdded()) renderMonth();
+            });
+            sheet.show(getChildFragmentManager(), "edit_period");
         });
     }
 
@@ -179,6 +181,7 @@ public class CalendarFragment extends Fragment {
     // ─── Generate dan render grid kalender ────────────────────────────────────
 
     private void renderMonth() {
+        if (!isAdded()) return;
         List<CalendarDay> days = generateDays();
         calendarAdapter.setDays(days);
     }
