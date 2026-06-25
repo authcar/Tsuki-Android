@@ -8,13 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Centralized helper for all Firestore read/write operations.
- * Structure:
- *   users/{uid}/profile      → name, email, birthday
- *   users/{uid}/cycle        → cycleLength, periodLength, periodStartDay/Month/Year
- *   users/{uid}/logs/{date}  → flow, symptoms, moods
- */
+
 public class FirestoreManager {
 
     private static final String COLLECTION_USERS = "users";
@@ -46,6 +40,22 @@ public class FirestoreManager {
         Map<String, Object> data = new HashMap<>();
         data.put("name",  name);
         data.put("email", email);
+        db.collection(COLLECTION_USERS).document(uid)
+                .collection("data").document(DOC_PROFILE)
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener(v -> { if (onSuccess != null) onSuccess.onSuccess(); })
+                .addOnFailureListener(e -> { if (onFailure != null) onFailure.onFailure(e); });
+    }
+
+    /**
+     * Simpan kota dan negara user ke profil Firestore (merge, tidak menimpa field lain).
+     */
+    public void saveLocation(String city, String country,
+                             OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        if (!isLoggedIn()) return;
+        Map<String, Object> data = new HashMap<>();
+        data.put("city",    city);
+        data.put("country", country);
         db.collection(COLLECTION_USERS).document(uid)
                 .collection("data").document(DOC_PROFILE)
                 .set(data, SetOptions.merge())

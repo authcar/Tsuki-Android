@@ -40,15 +40,23 @@ public class ReminderScheduler {
                                          int periodStartMonth,
                                          int periodStartYear,
                                          int cycleLength) {
+        // Baca jam reminder dari SharedPreferences (default 20:00)
+        android.content.SharedPreferences prefs =
+                context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        int reminderHour   = prefs.getInt("reminder_hour", 20);
+        int reminderMinute = prefs.getInt("reminder_minute", 0);
+
         // Hitung tanggal next period
         Calendar nextPeriod = Calendar.getInstance();
-        nextPeriod.set(periodStartYear, periodStartMonth, periodStartDay, 8, 0, 0);
+        nextPeriod.set(periodStartYear, periodStartMonth, periodStartDay,
+                reminderHour, reminderMinute, 0);
         nextPeriod.set(Calendar.MILLISECOND, 0);
         nextPeriod.add(Calendar.DAY_OF_YEAR, cycleLength);
 
         // Hitung tanggal fertile window (ovulation - 5)
         Calendar ovulation = Calendar.getInstance();
-        ovulation.set(periodStartYear, periodStartMonth, periodStartDay, 8, 0, 0);
+        ovulation.set(periodStartYear, periodStartMonth, periodStartDay,
+                reminderHour, reminderMinute, 0);
         ovulation.set(Calendar.MILLISECOND, 0);
         ovulation.add(Calendar.DAY_OF_YEAR, cycleLength - 14);
 
