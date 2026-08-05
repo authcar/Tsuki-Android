@@ -58,11 +58,10 @@ public class LocationHelper {
             notifyError(onError, "Location permission not granted");
             return;
         }
-
+        //location based service
         FusedLocationProviderClient client =
                 LocationServices.getFusedLocationProviderClient(context);
 
-        // Coba ambil last known location dulu (cepat, hemat baterai)
         client.getLastLocation()
                 .addOnSuccessListener(location -> {
                     if (location != null) {

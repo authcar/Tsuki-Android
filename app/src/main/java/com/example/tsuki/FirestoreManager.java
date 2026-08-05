@@ -74,7 +74,7 @@ public class FirestoreManager {
                 .addOnFailureListener(e -> { if (onFailure != null) onFailure.onFailure(e); });
     }
 
-    // ─── Cycle settings ───────────────────────────────────────────────────────
+    // save cycles ───────────────────────────────────────────────────────
 
     public void saveCycleData(int periodStartDay, int periodStartMonth, int periodStartYear,
                               int periodLength, int cycleLength,

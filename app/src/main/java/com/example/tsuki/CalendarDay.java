@@ -1,7 +1,6 @@
 package com.example.tsuki;
 
 public class CalendarDay {
-
     public enum DayType {
         NORMAL,
         PERIOD,
